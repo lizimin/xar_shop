@@ -1,0 +1,327 @@
+<extend name="public/element_base" />
+<block name="header_css">
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/static/js/webuploader/webuploader.css">
+    <style>
+        .slider{
+            background: #000000;
+        }
+    </style>
+</block>
+<block name="main_body">
+    <form class="layui-form" action="" >
+        <input type="hidden" name="st_outid" value="{$info['st_outid']|default=''}"/>
+        <input type="hidden" name="goods_id" id="goods_id" value="{$info['goods_id']|default=''}"/>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">对应商品</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="goods_name" placeholder="请点击选择商品" autocomplete="off" class="layui-input" readonly>
+                </div>
+                <div class="layui-input-inline">
+                    <button class="layui-btn" id="select_goods" type="button">选择商品</button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">数量</label>
+            <div class="layui-input-block">
+                <input type="number" name="goods_num" id="goods_num" value="{$info['goods_num']|default=1}"  placeholder="请输入数量" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">单价</label>
+            <div class="layui-input-block">
+                <input type="number" name="goods_price" id="goods_price" value="{$info['goods_price']|default=''}"  placeholder="自动计算，请勿输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">总价</label>
+            <div class="layui-input-block">
+                <input type="number" name="goods_price_sum" id="goods_price_sum" value="{$info['goods_price_sum']|default=''}"  placeholder="自动计算，请勿输入" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">发货用户</label>
+            <div class="layui-input-block">
+                <select name="send_shop_user_id" id="send_shop_user_id" lay-verify="required" lay-search>
+                    <volist name="shop_users" id="user">
+                        <option value="{$user['shop_user_id']}" <if condition="$user['shop_user_id'] eq $info['send_shop_user_id']">selected</if>>{$user['urealname']}</option>
+                    </volist>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">接收店铺</label>
+            <div class="layui-input-block">
+                <select name="accpet_shop_id" id="accpet_shop_id" lay-filter="accpet_shop_id" lay-search>
+                    <option value="0">无</option>
+                    <volist name="group_shops" id="shop">
+                        <option value="{$shop['shop_id']}" <if condition="$shop['shop_id'] eq $info['accpet_shop_id']">selected</if>>{$shop['shop_name']}</option>
+                    </volist>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">接收用户</label>
+            <div class="layui-input-block">
+                <select name="accept_shop_user_id" id="accept_shop_user_id" lay-search>
+
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea name="out_remarks" placeholder="请输入备注" class="layui-textarea">{$info['out_remarks']|default=''}</textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="picker-box layui-input-block">
+                <div id="picker_aids" class="picker_button">上传文件</div>
+                <input type="hidden" name="goods_img" id="field_goods_img" value="{$info.goods_img|default=''}">
+                <div id="fileList_goods_img" class="upload-file-list-info">
+                    <if condition="isset($info['goods_img']) && $info['goods_img']">
+                        <php>
+                            $file_list = explode(',',$info['goods_img']);
+                        </php>
+                        <ul class="am-list">
+                            <volist name="$file_list" id="item">
+                                <php>
+                                    $file_info = get_file($item);
+                                </php>
+                                <li class="affix-list-item" id="WU_FILE_{$key}">
+                                    <div class="filebox image am-inline-block">
+                                        <span class="webuploader-pick-file-close" data-queued-id="WU_FILE_{$key}" data-id="{$item}" data-fileurl="{$file_info['path']}"><i class="layui-icon"></i> </span>
+                                                <span class="am-inline-block">
+                                                    <lable>文件名:</lable>{$file_info['oldname']}
+                                                </span>
+                                    </div>
+
+                                    <div class="upload-file-info am-inline-block am-fr">
+                                        <span class="fname"></span>
+                                        <span class="fsize">上传时间:{$file_info['create_time']|date='Y-m-d H:i:s',###}</span>
+                                        <div class="clearfix"></div>
+                                    </div>
+
+                                </li>
+                            </volist>
+                        </ul>
+                    </if>
+                </div>
+
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="form_submit">保存</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+    <!--侧滑-->
+    <div id="slider" class="slider">
+        <div class="layui-row">
+            <div class="layui-col-xs4">
+                <div class="cat-table-opr-tool-bar">
+                    <form class="layui-form">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline" style="width: auto;">
+                                    <input type="text" id="cat_kw" placeholder="请输入搜索内容" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-input-inline" style="width: auto;">
+                                    <button class="layui-btn" data-type="search" type="button">搜索</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <table id="cat_table" lay-filter="cat_table"></table>
+            </div>
+            <div class="layui-col-xs8">
+                <div class="goods-table-opr-tool-bar">
+                    <form class="layui-form">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline" style="width: auto;">
+                                    <input type="text" id="goods_kw" placeholder="请输入搜索内容" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-input-inline" style="width: auto;">
+                                    <button class="layui-btn" data-type="search" type="button">搜索</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <table id="goods_table" lay-filter="goods_table"></table>
+            </div>
+        </div>
+    </div>
+    <!--侧滑-->
+</block>
+<block name="footer_js">
+    <script src="__PUBLIC__/static/js/jquery.slidereveal.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/static/js/webuploader/webuploader.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/static/js/webuploader/webuploader.custom.js"></script>
+    <script>
+        var form;
+        var cat = 0;
+        layui.use(['table', 'form','laydate'], function(){
+            form = layui.form;
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#car_regdate'
+            });
+            laydate.render({
+                elem: '#car_issuedate'
+            });
+            form.on('submit(form_submit)', function(data){
+                var load_index = layer.load(0, {shade: 0.5});
+                $.post('index.php?s={:request()->module().'/'.request()->controller().'/'.request()->action()}', data.field, function(data){
+                    var obj = eval('(' + data + ')');
+                    if(obj.status != 0){
+                        layer.msg(obj.msg, {icon: 5});
+                    }else{
+                        layer.msg('操作成功！', {icon: 1, end:function(){window.location.href = window.location.href;}});
+
+                    }
+                    layer.close(load_index);
+                });
+                return false;
+            });
+
+            form.on('select(accpet_shop_id)', function(data){
+                set_accept_users(data.value);
+            });
+
+            var table = layui.table;
+
+            var cat_table = table.render({
+                elem: '#cat_table',
+                height: 'full-60',
+                url: 'index.php?s={:request()->module()."/Goods/get_cats"}',
+                method: 'post',
+                where: get_cat_post_data(),
+                limit:200,
+                limits:[50,100,150],
+                cols: [[ //表头
+                    {field: 'cat_name', title: '分类', align:'left', event: 'set_cat'}
+                ]]
+            });
+
+            var goods_table = table.render({
+                elem: '#goods_table',
+                height: 'full-60',
+                url: 'index.php?s={:request()->module()."/Goods/index"}',
+                method: 'post',
+                where: get_cat_post_data(),
+                limit:200,
+                limits:[50,100,150],
+                cols: [[ //表头
+                    {field: 'goods_name', title: '商品名称\n点击单元格自动选中商品', event: 'set_goods'},
+                    {field: 'goods_img', title: '图片'},
+                    {field: 'goods_dep', title: '描述'},
+                    {field: 'goods_cont', title: '详情'},
+                ]]
+            });
+
+            table.on('tool(cat_table)', function(obj){
+                var data = obj.data;
+                if(obj.event === 'set_cat'){
+                    cat = data.cat_id;
+                    var kw = $('#goods_kw').val();
+                    var post_data = {kw: kw, cat_id: cat};
+                    goods_table.reload({
+                        where: post_data
+                    });
+                }
+            });
+
+            table.on('tool(goods_table)', function(obj){
+                var data = obj.data;
+                if(obj.event === 'set_goods'){
+                    set_goods_info(data);
+                    $('#slider').slideReveal("hide");
+                }
+            });
+
+            $('.cat-table-opr-tool-bar .layui-btn').on('click', function(){
+                var type = $(this).data('type');
+                if(type == 'search'){
+                    cat_table.reload({
+                        where: get_cat_post_data()
+                    });
+                }
+            });
+
+            $('.goods-table-opr-tool-bar .layui-btn').on('click', function(){
+                var type = $(this).data('type');
+                if(type == 'search'){
+                    goods_table.reload({
+                        where: get_goods_post_data()
+                    });
+                }
+            });
+
+            $("#picker_aids").GdUploader({
+                fileNumLimit:5,
+                uploadEvents: {
+                    uploadComplete:function(file){}
+                },
+                listName : 'fileList_goods_img',
+                hiddenName: 'field_goods_img',
+                hiddenValType:2,
+                fileSingleSizeLimit:20*1024*1024,
+                closeX:true
+            }, {
+                fileType: 'service',
+                filename : 'attachment'
+            });
+
+            $('#slider').slideReveal({
+                trigger: $("#select_goods"),
+                push: false,
+                position: 'right',
+                width: 60,
+                speed: 600
+            });
+
+            $("#goods_price,#goods_num").change(function(){
+                $('#goods_price_sum').val($('#goods_price').val() * $('#goods_num').val());
+            });
+        });
+
+        function set_goods_info(info){
+            $('#goods_name').val(info.goods_name);
+            $('#goods_id').val(info.goods_id);
+            $('#goods_price').val(info.goods_price);
+            $('#goods_price_sum').val(info.goods_price * $('#goods_num').val());
+        }
+
+        function get_cat_post_data(){
+            var kw = $('#cat_kw').val();
+            var post_data = {kw: kw};
+            return post_data;
+        }
+
+        function get_goods_post_data(){
+            var kw = $('#goods_kw').val();
+            var post_data = {kw: kw, cat_id: cat};
+            return post_data;
+        }
+
+        function set_accept_users(shop_id){
+            $.getJSON('index.php?s={:request()->module().'/'.request()->controller()."/get_shop_user"}&shop_id='+shop_id, function(data){
+                var str = '';
+                for(var i=0;i<data.length;i++){
+                    var temp_obj = data[i];
+                    str += '<option value="'+temp_obj['shop_user_id']+'">'+temp_obj['urealname']+'</option>';
+                }
+                var element = $('#accept_shop_user_id');
+                element.empty();
+                element.append(str);
+                form.render();
+            });
+        }
+    </script>
+</block>

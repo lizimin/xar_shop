@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>表单数组测试</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div>
+        <form method="post" class="am-form J_ajaxForm" id="myform" action="{:url('')}">
+            <input type="text" name="car_plateno" value="云ABC123" /><br>
+            <input type="text" name="car_mileage" value="1000" /><br>
+            <input type="text" name="car_oil" value="60" /><br>
+
+            <input type="text" name="car_brand" value="1" /><br>
+            <input type="text" name="car_mode" value="2" /><br>
+            <input type="text" name="shop_id" value="1" /><br>
+
+            <input type="text" name="car_outside_check[0][chk_id]" value="1" /><br>
+            <input type="text" name="car_outside_check[0][chkorder_point]" value="天线" /><br>
+            <input type="text" name="car_outside_check[0][chkorder_img]" value="http://www.baidu.com/" /><br>
+            <input type="text" name="car_outside_check[0][chkorder_remarks]" value="备注" /><br>
+            <textarea rows="" cols="" name="car_outside_remarks">sfsdfdsf</textarea><br>
+
+            <input type="text" name="car_inside_check[0][chk_id]" value="6" /><br>
+            <input type="text" name="car_inside_check[0][chkorder_point]" value="刮花、污水" /><br>
+            <input type="text" name="car_inside_check[0][chkorder_img]" value="http://www.baidu.com/" /><br>
+            <input type="text" name="car_inside_check[0][chkorder_remarks]" value="备注" /><br>
+            <textarea rows="" cols="" name="car_inside_remarks">sdfdsfds</textarea><br>
+
+            <button type="submit" class="layui-btn" lay-submit="" lay-filter="formSubmit">提交</button>
+        </form>
+    </div>
+</body>
+
+</html>

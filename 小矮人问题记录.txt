@@ -1,0 +1,15 @@
+goods
+stock
+stock_in
+stock_out
+
+
+1、先添加产品（goods）
+2、使用stock_in产生入库记录，同时增加stock库存记录
+3、使用stock_out产生出库记录，同时减少stock库存数量
+
+
+
+问题
+1、入库一件，领一盒怎么算？？---使用最小单位入库
+2、库存不一定关联产品

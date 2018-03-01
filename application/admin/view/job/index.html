@@ -1,0 +1,244 @@
+<extend name="public/element_base" />
+<block name="main_body">
+    <div class="table-opr-tool-bar">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">搜索内容</label>
+                    <div class="layui-input-inline" style="width: auto;">
+                        <input type="text" id="kw" placeholder="请输入搜索内容" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">类型</label>
+                    <div class="layui-input-inline">
+                        <select id="job_type" style="width: 80px;">
+                            <option value="">全部</option>
+                            <option value="0">服务</option>
+                            <option value="1">材料</option>
+                        </select>
+                    </div>
+                    <label class="layui-form-label">时间</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="start_time" value="{$start_time|default=''}" readonly>
+                    </div>
+                    <div class="layui-form-mid">至</div>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="end_time" value="{$end_time|default=''}" readonly>
+                    </div>
+                    <div class="layui-input-inline" style="width: auto;">
+                        <button class="layui-btn" data-type="search" type="button">搜索</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <table id="main_table" lay-filter="main_table"></table>
+</block>
+<block name="footer_js">
+    <script type="text/html" id="JobsnTpl">
+        <a onclick="openDetail({{d.job_id}})">{{d.job_sn}}</a>
+    </script>
+    <script type="text/html" id="opr_toolbar">
+        <a class="layui-btn layui-btn-xs" lay-event="showDetail">查看</a>
+        <!--<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>-->
+        <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
+    </script>
+    <script>
+        layui.use(['table', 'form'], function() {
+            var table = layui.table;
+            var laydate = layui.laydate;
+            //初始化时间
+            laydate.render({
+                elem: '#start_time',
+                done: function(value, date){
+                    var new_value = value + ' 00:00:00';
+                    var start_time = Date.parse(new Date(new_value));
+                    var end_time = Date.parse(new Date($('#end_time').val() + ' 00:00:00'));
+                    if(start_time > end_time){
+                        layer.alert('开始时间不能大于结束时间！');
+                        $('#start_time').val($('#end_time').val());
+                    }
+                }
+            });
+            laydate.render({
+                elem: '#end_time',
+                done: function(value, date){
+                    var new_value = value + ' 00:00:00';
+                    var start_time = Date.parse(new Date($('#start_time').val() + ' 00:00:00'));
+                    var end_time = Date.parse(new Date(new_value));
+                    if(start_time > end_time){
+                        layer.alert('结束时间不能小于开始时间！');
+                        $('#end_time').val($('#start_time').val());
+                    }
+                }
+            });
+            //第一个实例
+            var main_table = table.render({
+                elem: '#main_table',
+                height: 'full-100',
+                url: 'index.php?s={:request()->module()."/".request()->controller()."/".request()->action()}',
+                method: 'post',
+                where: get_post_data(),
+                page: true,
+                limit: 200,
+                limits: [50, 100, 150],
+                cols: [
+                    [{
+                        field: 'index',
+                        title: '序号',
+                        align: 'center',
+                        type: 'numbers'
+                    }, {
+                        field: 'job_sn',
+                        title: '派工单号（点击查看）',
+                        width: 250,
+                        align: 'center',
+                        templet: '#JobsnTpl'
+                    }, {
+                        field: 'car_plateno',
+                        title: '车牌',
+                        width: 150,
+                        align: 'center'
+                    }, {
+                        field: 'service_name',
+                        title: '名称',
+                        width: 150,
+                        align: 'center'
+                    },{
+                        field: 'job_type',
+                        title: '类型',
+                        width: 150,
+                        align: 'center'
+                    }, {
+                        field: 'server_count',
+                        title: '数量',
+                        width: 150,
+                        align: 'center'
+                    }, {
+                        field: 'service_price',
+                        title: '单价',
+                        width: 150,
+                        align: 'center'
+                    }, {
+                        field: 'server_totalprice',
+                        title: '总价',
+                        width: 150,
+                        align: 'center'
+                    }, {
+                        field: 'shop_name',
+                        title: '所属店铺',
+                        width: 200,
+                        align: 'center'
+                    },{
+                        field: 'opr_toolbar',
+                        title: '操作',
+                        width: 150,
+                        toolbar: '#opr_toolbar',
+                        align: 'center'
+                    }
+                    ]
+                ],
+                done: function(res, curr, count){
+                    var start_td = $('.layui-table-body td[data-field=job_sn]');
+                    var current_job_sn = start_td.attr('data-content');
+                    var row_span = 0;
+                    var all_td_lenght = $('.layui-table-body td[data-field=job_sn]').length;
+                    $('.layui-table-body td[data-field=job_sn]').each(function(index,element){
+                        var temp_current_job_sn = $(this).attr('data-content');
+                        if(current_job_sn != temp_current_job_sn){
+                            start_td.parent().css('border-top', '1px solid #000000');
+                            start_td.attr('rowspan', row_span);
+                            start_td.parent().find('td[data-field=car_plateno]').attr('rowspan', row_span);
+                            start_td = $(this);
+                            row_span = 0;
+                            current_job_sn = temp_current_job_sn;
+                        }else{
+                            if(row_span != 0){
+                                $(this).parent().find('td[data-field=car_plateno]').remove();
+                                $(this).remove();
+                            }
+                        }
+                        row_span++;
+                        if(index + 1 >= all_td_lenght){
+                            if(current_job_sn == temp_current_job_sn){
+                                start_td.attr('rowspan', row_span);
+                                start_td.parent().find('td[data-field=car_plateno]').attr('rowspan', row_span);
+                            }
+                        }
+                    });
+                }
+            });
+            //监听工具条
+            table.on('tool(main_table)', function(obj) {
+                var data = obj.data;
+                if (obj.event === 'del') {
+                    layer.confirm('真的删除行么', function(index) {
+                        layer.close(index);
+                        $.getJSON('index.php?s={:request()->module().'/'.request()->controller()."/delete"}&id=' + data.job_id, function(data) {
+                            data = eval('(' + data + ')');
+                            if (data.status != 0) {
+                                layer.msg(data.msg, {
+                                    icon: 5
+                                });
+                            } else {
+                                layer.msg('操作成功！', {
+                                    icon: 1
+                                });
+                            }
+                        });
+                    });
+                } else if (obj.event === 'edit') {
+                    var index = layer.open({
+                        type: 2,
+                        scrollbar: true,
+                        area: ['50%', '60%'],
+                        content: 'index.php?s={:request()->module().'/'.request()->controller()."/edit"}&id=' + data.job_id
+                    });
+                    //                    layer.iframeAuto(index);
+                }else if (obj.event === 'showDetail') {
+                    openDetail(data.job_id);
+                }
+            });
+            //监听按钮组
+
+            $('.table-opr-tool-bar .layui-btn').on('click', function() {
+                var type = $(this).data('type');
+                if (type == 'add') {
+                    layer.open({
+                        type: 2,
+                        scrollbar: true,
+                        area: ['50%', '60%'],
+                        content: 'index.php?s={:request()->module().'/'.request()->controller()."/add"}'
+                    });
+                }
+            });
+
+            $('.table-opr-tool-bar .layui-btn').on('click', function(){
+                var type = $(this).data('type');
+                if(type == 'search'){
+                    main_table.reload({
+                        where: get_post_data()
+                    });
+                }
+            });
+        });
+        function openDetail(job_sn){
+            var index = layer.open({
+                type: 2,
+                maxmin: true,
+                scrollbar: true,
+                area: ['50%', '60%'],
+                content: 'index.php?s={:request()->module().'/'."orderrecp/show_detail"}&id=' + job_sn
+            });
+        }
+
+        function get_post_data(){
+            var kw = $('#kw').val();
+            var job_type = $('#job_type').val();
+            var start_time = $('#start_time').val();
+            var end_time = $('#end_time').val();
+
+            var post_data = {kw: kw, job_type: job_type, start_time: start_time, end_time: end_time};
+            return post_data;
+        }
+    </script>
+</block>

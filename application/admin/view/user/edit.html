@@ -1,0 +1,174 @@
+<extend name="public/element_base" />
+<block name="main_body">
+    <form class="layui-form" action="">
+        <input type="hidden" name="shop_user_id" value="{$info['shop_user_id']|default=''}" />
+        <input type="hidden" name="roles" id="roles" value="{:$info['roles']?implode(',', $info['roles']):''}" />
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" name="urealname" value="{$info['urealname']|default=''}" required lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">账号</label>
+            <div class="layui-input-block">
+                <input type="text" name="uname" value="{$info['uname']|default=''}" required lay-verify="required" placeholder="请输入账号" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">openid</label>
+            <div class="layui-input-block">
+                <input type="text" name="openid" value="{$info['openid']|default=''}" placeholder="请输入openid" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">unionid</label>
+            <div class="layui-input-block">
+                <input type="text" name="unionid" value="{$info['unionid']|default=''}" placeholder="请输入unionid" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">员工编号</label>
+            <div class="layui-input-block">
+                <input type="text" name="ucardno" value="{$info['ucardno']|default=''}" placeholder="请输入员工编号" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号码</label>
+            <div class="layui-input-block">
+                <input type="text" name="utel" lay-verify="required|phone" value="{$info['utel']|default=''}" placeholder="请输入手机号码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属工作组</label>
+            <div class="layui-input-block">
+                <select name="group_id" lay-verify="required" lay-search>
+                    <option>无</option>
+                    <volist name="groups" id="group">
+                        <option value="{$group['group_id']}" <if condition="$group['group_id'] eq $info['group_id']">selected</if>>{$group['group_name']}</option>
+                    </volist>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="uemail" value="{$info['uemail']|default=''}" lay-verify="email" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">员工生日</label>
+            <div class="layui-input-block">
+                <input type="text" name="ubirth" class="layui-input" id="ubirth" value="{$info['ubirth']|default='1989-01-01'}" placeholder="1989-01-01">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">员工住址</label>
+            <div class="layui-input-block">
+                <input type="text" name="uaddress" value="{$info['uaddress']|default=''}" placeholder="请输入员工住址" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-block">
+                <input type="radio" name="usex" value="1" title="男" <if condition="1 eq $info['usex']">checked</if>>
+                <input type="radio" name="usex" value="0" title="女" <if condition="0 eq $info['usex']">checked</if>>
+            </div>
+        </div>
+        <div class="layui-form-item" lay-filter="role_content" id="role_content">
+            <div class="layui-inline">
+                <label class="layui-form-label">角色</label>
+                <div class="layui-input-inline">
+                    <select lay-filter="role_select" id="role_select">
+                        <option>无</option>
+                        <volist name="roles" id="role">
+                            <option value="{$role['role_id']}">{$role['role_name']}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <button type="button" class="layui-btn" onclick="add_roles()">绑定</button>
+                </div>
+            </div>
+            <div class="layui-input-block" id="content_roles">
+                <volist name="role_arr" id="role">
+                    <div class="layui-input-inline btn-line" style="width: auto;">
+                        <span class="layui-btn" id="current_role_{$role['role_id']}">{$role['role_name']}<i class="layui-icon" onclick="remove_role({$role['role_id']})"></i></span>
+                    </div>
+                </volist>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否启用</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="status" lay-skin="switch" lay-text="是|否" <if condition="1 eq $info['status']">checked</if>>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea name="uremarks" placeholder="请输入备注" class="layui-textarea">{$info['uremarks']|default=''}</textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="form_submit">保存</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</block>
+<block name="footer_js">
+    <script>
+        var current_roles = [{:$info['roles'] ? implode(',', $info['roles']) : ''}];
+        layui.use(['form', 'laydate'], function() {
+            var form = layui.form;
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#ubirth'
+            });
+            form.on('submit(form_submit)', function(data) {
+                var load_index = layer.load(0, {
+                    shade: 0.5
+                });
+                $.post('index.php?s={:request()->module().'/'.request()->controller().'/'.request()->action()}', data.field, function(data) {
+                    var obj = eval('(' + data + ')');
+                    if (obj.status != 0) {
+                        layer.msg(obj.msg, {
+                            icon: 5
+                        });
+                    } else {
+                        layer.msg('操作成功！', {
+                            icon: 1,
+                            end: function() {
+                                window.location.href = window.location.href;
+                            }
+                        });
+
+                    }
+                    layer.close(load_index);
+                });
+                return false;
+            });
+        });
+
+        function add_roles() {
+            var nees_obj = $('#role_select').find("option:selected");
+            if (in_array(parseInt(nees_obj.val()), current_roles)) {
+                return;
+            }
+            current_roles.push(parseInt(nees_obj.val()));
+            var str = '<div class="layui-input-inline btn-line" style="width: auto;"><span class="layui-btn" id="current_role_' + nees_obj.val() + '">' + nees_obj.text() + '&nbsp;<i class="layui-icon" onclick="remove_role(' + nees_obj.val() + ')"></i></span></div>';
+            $('#content_roles').append(str);
+            $('#roles').val(current_roles.join(','));
+        }
+
+        function remove_role(id) {
+            $('#current_role_' + id).remove();
+            current_roles = remove_array(id, current_roles);
+            $('#roles').val(current_roles.join(','));
+        }
+    </script>
+</block>

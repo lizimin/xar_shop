@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>文件上传测试</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div>
+        <form action="{:url('api/upload/upload')}" name="" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" id="file" value="" />
+
+            <button type="submit" class="layui-btn" lay-submit="" lay-filter="formSubmit">提交</button>
+        </form>
+    </div>
+</body>
+
+</html>

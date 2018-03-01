@@ -1,0 +1,93 @@
+<extend name="public/element_base" />
+<block name="main_body">
+    <form class="layui-form" action="" >
+        <input type="hidden" name="customer_id" value="{$info['customer_id']|default=''}"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号码</label>
+            <div class="layui-input-block">
+                <input type="text" name="ctel" lay-verify="required|phone" value="{$info['ctel']|default=''}" placeholder="请输入手机号码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" name="crealname" value="{$info['crealname']|default=''}" required  lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">身份证</label>
+            <div class="layui-input-block">
+                <input type="text" name="ccardno" value="{$info['ccardno']|default=''}"  placeholder="请输入身份证" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-block">
+                <input type="radio" name="csex" value="1" title="男" <if condition="1 eq $info['csex']">checked</if>>
+                <input type="radio" name="csex" value="0" title="女" <if condition="0 eq $info['csex']">checked</if>>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="cemail"  value="{$info['cemail']|default=''}"lay-verify="email" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">员工生日</label>
+            <div class="layui-input-block">
+                <input type="text" name="cbirth" class="layui-input" id="cbirth" value="{$info['cbirth']|date='Y-m-d',###}" placeholder="1989-01-01">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">住址</label>
+            <div class="layui-input-block">
+                <input type="text" name="caddress" value="{$info['caddress']|default=''}"  placeholder="请输入住址" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea name="cremarks" placeholder="请输入备注" class="layui-textarea">{$info['cremarks']|default=''}</textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否启用</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="is_status" lay-skin="switch" lay-text="是|否" <if condition="1 eq $info['is_status']">checked</if>>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="form_submit">保存</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</block>
+<block name="footer_js">
+    <script>
+        layui.use(['form','laydate'], function(){
+            var form = layui.form;
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#cbirth'
+            });
+            form.on('submit(form_submit)', function(data){
+                var load_index = layer.load(0, {shade: 0.5});
+                $.post('index.php?s={:request()->module().'/'.request()->controller().'/'.request()->action()}', data.field, function(data){
+                    var obj = eval('(' + data + ')');
+                    if(obj.status != 0){
+                        layer.msg(obj.msg, {icon: 5});
+                    }else{
+                        layer.msg('操作成功！', {icon: 1, end:function(){window.location.href = window.location.href;}});
+
+                    }
+                    layer.close(load_index);
+                });
+                return false;
+            });
+        });
+
+    </script>
+</block>

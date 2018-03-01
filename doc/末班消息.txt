@@ -1,0 +1,9 @@
+车辆服务进度通知
+https://mp.weixin.qq.com/advanced/tmplmsg?action=tmpl_preview&t=tmplmsg/preview&id=OPENTM207144461&token=308701972&lang=zh_CN
+
+接车通知
+https://mp.weixin.qq.com/advanced/tmplmsg?action=tmpl_preview&t=tmplmsg/preview&id=OPENTM407543479&token=308701972&lang=zh_CN
+
+完工提车通知
+https://mp.weixin.qq.com/advanced/tmplmsg?action=tmpl_preview&t=tmplmsg/preview&id=OPENTM402223277&token=308701972&lang=zh_CN
+

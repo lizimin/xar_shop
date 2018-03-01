@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{:config('web_site_title')}</title>
+    <link href="__PUBLIC__/login/style.css" rel="stylesheet" type="text/css" media="all"/>
+</head>
+<body>
+<div class="login-form">
+    <div class="top-login">
+        <span><img src="" alt=""/></span>
+    </div>
+    <h1>登录</h1>
+    <div class="login-top">
+        <form action="index.php?s=admin/index/login" method="post">
+            <div class="login-ic">
+                <i ></i>
+                <input type="text" id="username" name="username" placeholder="请输入账号"/>
+                <div class="clear"> </div>
+            </div>
+            <div class="login-ic">
+                <i class="icon"></i>
+                <input type="password"  id="password" name="password" placeholder="请输入密码"/>
+                <div class="clear"> </div>
+            </div>
+
+            <div class="login-ic">
+                <i class="icon"></i>
+                <input type="text" name="verify" class="form-control" placeholder="验证码" style="width: 200px;">
+                <span class="input-group-addon reloadverify"><img src="index.php?s=admin/index/verify" alt="验证码" height="40" class="verifyimg"></span>
+                <div class="clear"> </div>
+            </div>
+
+            <div class="log-bwn">
+                <input type="submit"  value="登录" >
+            </div>
+        </form>
+    </div>
+    <p class="copy">© 2017 {:config('web_site_title')}</p>
+</div>
+</body>
+<script type="text/javascript" src="http://gd.kg.clzg.cn/public/static/js/jquery/v2.x/jquery.min.js"></script>
+<script type="text/javascript">
+    $(function(){
+        //刷新验证码
+        var verifyimg = $(".verifyimg").attr("src");
+        $(".reloadverify").click(function(){
+            if( verifyimg.indexOf('?')>0){
+                $(".verifyimg").attr("src", verifyimg+'&random='+Math.random());
+            }else{
+                $(".verifyimg").attr("src", verifyimg.replace(/\?.*$/,'')+'?'+Math.random());
+            }
+        });
+    });
+</script>
+</html>

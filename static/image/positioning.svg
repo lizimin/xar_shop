@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="81px" height="109px" viewBox="0 0 81 109" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>Artboard 4</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M12.2326578,44.9220829 C4.93093277,40.8064966 0,32.9790888 0,24 C0,10.745166 10.745166,0 24,0 C37.254834,0 48,10.745166 48,24 C48,32.4523404 43.6306333,39.8841604 37.0273917,44.1599684 L24.5,80.8733893 L12.2326578,44.9220829 Z" id="path-1"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-4">
+            <g id="Group-13" transform="translate(17.000000, 12.000000)">
+                <ellipse id="Oval-4" fill="#000000" opacity="0.5" cx="24.5" cy="80" rx="10.5" ry="5"></ellipse>
+                <g id="Combined-Shape">
+                    <use fill="#272727" fill-rule="evenodd" xlink:href="#path-1"></use>
+                    <path stroke="#FFFFFF" stroke-width="2" d="M24.5,77.7768236 L36.1929094,43.5089794 L36.4838607,43.3205793 C42.9905721,39.1072777 47,31.8965185 47,24 C47,11.2974508 36.7025492,1 24,1 C11.2974508,1 1,11.2974508 1,24 C1,32.3984372 5.53894004,40.0012877 12.7236771,44.0509342 L13.0559156,44.238199 L24.5,77.7768236 Z"></path>
+                </g>
+                <circle id="Oval-3" fill="#FE4D3D" cx="24.5" cy="23.5" r="7.5"></circle>
+            </g>
+        </g>
+    </g>
+</svg>

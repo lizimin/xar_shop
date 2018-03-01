@@ -1,0 +1,68 @@
+<extend name="public/element_base" />
+<block name="main_body">
+    <div class="table-opr-tool-bar">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">商品</label>
+                    <div class="layui-input-inline">
+                        <select name="goods_id" id="goods_id">
+                            <option value="">全部</option>
+                            <option value="0">贷</option>
+                            <option value="1">借</option>
+                        </select>
+                    </div>
+                    <div class="layui-input-inline">
+                        <button class="layui-btn" data-type="search" type="button">搜索</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <table id="main_table" lay-filter="main_table"></table>
+</block>
+<block name="footer_js">
+    <script>
+        layui.use(['table', 'form', 'laydate'], function(){
+            var laydate = layui.laydate;
+            var table = layui.table;
+
+            var table_ins = table.render({
+                elem: '#main_table',
+                height: 'full-60',
+                url: 'index.php?s={:request()->module()."/".request()->controller()."/".request()->action()}',
+                method: 'post',
+                where: get_post_data(),
+                page: true,
+                limit:200,
+                limits:[50,100,150],
+                cols: [[ //表头
+                    {field: 'index', title: '序号', align:'center', type:'numbers'},
+                    {field: 'goods_name', title: '库存名称',width: 150, align:'center'},
+                    {field: 'goods_num', title: '数量',width: 150, align:'center'},
+                    {field: 'goods_unit', title: '单位',width: 150, align:'center'},
+                    {field: 'googs_price', title: '售价',width: 150, align:'center'},
+                    {field: 'googs_whoprice', title: '批发价',width: 150, align:'center'},
+                    {field: 'goods_img', title: '产品图',width: 150, align:'center'},
+                    {field: 'goods_cont', title: '详细说明',width: 150, align:'center'},
+                ]]
+            });
+            //监听按钮组
+
+            $('.table-opr-tool-bar .layui-btn').on('click', function(){
+                var type = $(this).data('type');
+                if(type == 'search'){
+                    table_ins.reload({
+                        where: get_post_data()
+                    });
+                }
+            });
+        });
+
+        function get_post_data(){
+            var goods_id = $('#goods_id').val();
+            var post_data = {goods_id: goods_id};
+            return post_data;
+        }
+    </script>
+</block>

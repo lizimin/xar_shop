@@ -1,0 +1,1 @@
+<?phpnamespace app\common\model;use app\common\model\Model;class MallProBrand extends Model{	protected $name = 'mall_pro_brand';	protected $pk = 'brand_id';	protected $insert = array('create_time');	protected $update = array('update_time');}

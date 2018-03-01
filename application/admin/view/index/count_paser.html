@@ -1,0 +1,25 @@
+<extend name="public/element_base" />
+<block name="main_body">
+    <div class="layui-row">
+        <div class="layui-col-xs12">
+            <fieldset class="layui-elem-field site-demo-button" style="margin-top: 30px;">
+                <legend>接单概况</legend>
+                <div>
+                    <button class="layui-btn">总接单数：{$total_count}</button>
+                    <button class="layui-btn layui-btn-normal">待付款单数：{$need_pay_count}</button>
+                    <button class="layui-btn layui-btn-warm">已收款总数：{$recive_money}</button>
+                    <button class="layui-btn layui-btn-danger">待收款总数：{$need_recive_money}</button>
+                </div>
+            </fieldset>
+            <div id="recp_charts" style="width: 100%;height:400px;"></div>
+        </div>
+    </div>
+</block>
+<block name="footer_js">
+    <script src="__PUBLIC__/static/js/echarts.min.js"></script>
+    <script>
+        var option = {$recp_charts};
+        var recp_chart = echarts.init(document.getElementById('recp_charts'));
+        recp_chart.setOption(option);
+    </script>
+</block>

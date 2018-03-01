@@ -1,0 +1,203 @@
+<extend name="public/element_base" />
+<block name="header_css">
+    <style>
+        .layui-form-item .layui-input-inline{
+            width: auto;
+        }
+        .btn-line{
+            height: 44px;
+        }
+    </style>
+</block>
+<block name="main_body">
+    <form class="layui-form" action="" id="form">
+        <input type="hidden" name="service_id" id="service_id" value="{$info['service_id']|default=''}"/>
+        <input type="hidden" name="service_multi" id="service_multi" value="{$info['service_multi']|default=''}" />
+        <input type="hidden" name="service_rela" id="service_rela" value="{$currrent_groups|default=''}" />
+        <div class="layui-form-item">
+            <label class="layui-form-label">项目名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="service_name" value="{$info['service_name']|default=''}" required  lay-verify="required" placeholder="请输入项目名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">指导价格</label>
+            <div class="layui-input-block">
+                <input type="number" name="service_price" id="service_price" value="{$info['service_price']|default=''}" required  lay-verify="required" placeholder="请输入指导价格" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">产品类型</label>
+            <div class="layui-input-block">
+                <select name="service_type" lay-filter="service_type">
+                    <volist name=":config('data_option')['service_type']" id="type">
+                        <option value="{$key}" <if condition="$key eq $info['service_type']">selected</if>>{$type}</option>
+                    </volist>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item" lay-filter="service_multi_content" id="service_multi_content" style="display: none;">
+            <div class="layui-inline">
+                <label class="layui-form-label">包含产品</label>
+                <div class="layui-input-inline">
+                    <select lay-filter="service_multi_select" id="service_multi_select">
+
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <button type="button" class="layui-btn" onclick="add_products()">添加</button>
+                </div>
+            </div>
+            <div class="layui-input-block" id="service_multi_content_products">
+                <volist name="child_services" id="child_service">
+                    <div class="layui-input-inline btn-line">
+                        <span class="layui-btn" id="current_product_{$child_service['service_id']}" price="{$child_service['service_name']}">{$child_service['service_name']}({$child_service['service_price']}元)&nbsp;<i class="layui-icon" onclick="remove_products({$child_service['service_id']})"></i></span>
+                    </div>
+                </volist>
+            </div>
+        </div>
+        <div class="layui-form-item" lay-filter="service_multi_content" id="service_rela_content">
+            <div class="layui-inline">
+                <label class="layui-form-label">隶属项目</label>
+                <div class="layui-input-inline">
+                    <select lay-filter="service_rela_select" id="service_rela_select">
+                        <volist name="groups" id="group">
+                            <option value="{$group['sg_id']}">{$group['sg_name']}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <button type="button" class="layui-btn" onclick="add_groups()">添加</button>
+                </div>
+            </div>
+            <div class="layui-input-block" id="service_rela_content_groups">
+                <volist name="rela_groups" id="group">
+                    <div class="layui-input-inline btn-line">
+                        <span class="layui-btn" id="current_group_{$group['sg_id']}">{$group['sg_name']}&nbsp;<i class="layui-icon" onclick="remove_groups({$group['sg_id']})"></i></span>
+                    </div>
+                </volist>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否启用</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="is_status" lay-skin="switch" lay-text="是|否" <if condition="1 eq $info['is_status']">checked</if>>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="form_submit">保存</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</block>
+<block name="footer_js">
+    <script>
+        var products = {$services};
+        var current_products = [{:implode(',', explode('||', $info['service_multi']))}];
+        var current_groups = [{$currrent_groups}];
+        var current_price = {$info['service_price']|default=0};
+
+
+        layui.use(['form'], function(){
+            var form = layui.form;
+            //初始化
+            var type = {$info['service_type']|default=0};
+            if(type != 0){
+                set_service_multi_select(type);
+            }
+            form.on('submit(form_submit)', function(data){
+                var load_index = layer.load(0, {shade: 0.5});
+                $.post('index.php?s={:request()->module().'/'.request()->controller().'/'.request()->action()}', data.field, function(data){
+                    var obj = eval('(' + data + ')');
+                    if(obj.status != 0){
+                        layer.msg(obj.msg, {icon: 5});
+                    }else{
+                        layer.msg('操作成功！', {icon: 1, end:function(){window.location.href = window.location.href;}});
+
+                    }
+                    layer.close(load_index);
+                });
+                return false;
+            });
+            form.on('select(service_type)', function(data){
+                set_service_multi_select(data.value);
+                form.render();
+            });
+            form.render();
+        });
+
+        function empty_product(){
+            current_products = [];
+            current_price = 0;
+            $('#service_multi').val('');
+            $('#service_price').val(current_price);
+            $('#service_multi_content_products').empty();
+        }
+
+        function set_service_multi_select(val){
+            if(val == 0){
+                empty_product();
+                $('#service_multi_content').hide();
+                return;
+            }else{
+                $('#service_multi_content').show();
+            }
+            var str = '';
+            for(var i=0;i<products.length;i++){
+                var obj = products[i];
+                str += '<option value="'+obj.service_id+'" price="'+obj.service_price+'">'+obj.service_name+'('+obj.service_price+'元)'+'</option>';
+            }
+            $('#service_multi_select').empty();
+            $('#service_multi_select').append(str);
+        }
+
+        function add_products(){
+            var nees_obj = $('#service_multi_select').find("option:selected");
+            if($('#service_id').val() == parseInt(nees_obj.val())){
+                layer.msg('当前项目不能作为自己的子项目！', {icon: 5});
+                return;
+            }
+            if(in_array(parseInt(nees_obj.val()), current_products)){
+                return;
+            }
+            current_products.push(parseInt(nees_obj.val()));
+            var str = '<div class="layui-input-inline btn-line"><span class="layui-btn" id="current_product_'+nees_obj.val()+'" price="'+nees_obj.attr('price')+'">'+nees_obj.text()+'&nbsp;<i class="layui-icon" onclick="remove_products('+nees_obj.val()+')"></i></span></div>';
+            $('#service_multi_content_products').append(str);
+            current_price += parseInt(nees_obj.attr('price'));
+            $('#service_price').val(current_price);
+            $('#service_multi').val(current_products.join(','));
+        }
+
+        function remove_products(id){
+            current_price -= parseInt($('#current_product_'+id).attr('price'));
+            $('#service_price').val(current_price);
+            $('#current_product_'+id).remove();
+            current_products = remove_array(id, current_products);
+            console.log(current_products);
+            $('#service_multi').val(current_products.join(','));
+        }
+
+        function add_groups(){
+            var nees_obj = $('#service_rela_select').find("option:selected");
+            if(in_array(parseInt(nees_obj.val()), current_groups)){
+                return;
+            }
+            current_groups.push(parseInt(nees_obj.val()));
+            var str = '<div class="layui-input-inline btn-line"><span class="layui-btn" id="current_group_'+nees_obj.val()+'">'+nees_obj.text().trim()+'&nbsp;<i class="layui-icon" onclick="remove_groups('+nees_obj.val()+')"></i></span></div>';
+            $('#service_rela_content_groups').append(str);
+            $('#service_rela').val(current_groups.join(','));
+        }
+
+        function remove_groups(id){
+            $('#current_group_'+id).remove();
+            current_groups = remove_array(id, current_groups);
+            $('#service_rela').val(current_groups.join(','));
+        }
+    </script>
+</block>

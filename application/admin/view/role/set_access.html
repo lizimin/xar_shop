@@ -1,0 +1,58 @@
+<extend name="public/element_base" />
+
+<block name="main_body">
+    <form action="" >
+        <div class="layui-btn-group table-opr-tool-bar">
+            <button type="button" class="layui-btn" onclick="save_access()"><i class="layui-icon"></i>保存</button>
+        </div>
+        <input type="hidden" name="role_id" id="role_id" value="{$info['role_id']|default=''}"/>
+        <ul id="access_tree"></ul>
+    </form>
+</block>
+<block name="layui_js">
+    <script src="http://www.jq22.com/demo/layerTree20161204/layui.js"></script>
+</block>
+<block name="footer_js">
+    <script>
+        layui.use(['form','tree'], function() {
+            var tree = layui.tree({
+                elem: '#access_tree',
+                check: 'checkbox',
+                skin: 'as',
+                drag: true,
+                checkboxName: 'aa[]',
+                checkboxStyle: "",
+                click: function(item) {
+
+                },
+                onchange: function (){
+
+                },
+                nodes: {$access}
+            });
+        });
+
+        function save_access(){
+            var load_index = layer.load(0, {shade: 0.5});
+            var ids = '';
+            $("input[type=checkbox]").each(function() {
+                var obj = $(this);
+                if (this.checked) {
+                    ids += obj.val() + ',';
+                }
+            });
+            var role = $('#role_id').val();
+            $.post('index.php?s={:request()->module().'/'.request()->controller().'/'.request()->action()}', {role_id: role, accesss: ids}, function(data){
+                var obj = eval('(' + data + ')');
+                if(obj.status != 0){
+                    layer.msg(obj.msg, {icon: 5});
+                }else{
+                    layer.msg('操作成功！', {icon: 1, end:function(){window.location.href = window.location.href;}});
+
+                }
+                layer.close(load_index);
+            });
+            console.log(ids);
+        }
+    </script>
+</block>

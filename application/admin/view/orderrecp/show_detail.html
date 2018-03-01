@@ -1,0 +1,304 @@
+<extend name="public/element_base" />
+<block name="header_css">
+    <style>
+        .th_title{
+            background: #e6e6e6;
+        }
+    </style>
+</block>
+<block name="main_body">
+    <div class="layui-form">
+        <div class="layui-tab layui-tab-card">
+            <ul class="layui-tab-title">
+                <li class="layui-this">接车单详情</li>
+                <li>接车时车辆情况</li>
+                <li>给客户报价表</li>
+                <li>内部派工表</li>
+            </ul>
+            <div class="layui-tab-content" style="height: 100px;">
+                <div class="layui-tab-item layui-show">
+                    <table class="layui-table">
+                        <colgroup>
+                            <col width="150">
+                            <col width="150">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <td class="th_title">接车单号：</td>
+                            <td>{$recp['order_sn']}</td>
+                            <td class="th_title">派工单号：</td>
+                            <td>{$recp['job_sn']}</td>
+                            <td class="th_title">接车时间：</td>
+                            <td>{$recp['create_time']}</td>
+                        </tr>
+                        <tr>
+                            <td class="th_title">接车单状态：</td>
+                            <td>{$recp['order_status']}</td>
+                            <td class="th_title">接单店铺：</td>
+                            <td>{$recp['shop']['shop_name']}</td>
+                            <td class="th_title">接待员：</td>
+                            <td>{$recp['user_info']['urealname']}</td>
+                        </tr>
+                        <tr>
+                            <td class="th_title">车牌号：</td>
+                            <td>{$recp['car_plateno']}</td>
+                            <td class="th_title">客户姓名：</td>
+                            <td>{$recp['customer_name']}</td>
+                            <td class="th_title">联系电话：</td>
+                            <td>{$recp['customer_tel']}</td>
+                        </tr>
+                        <tr>
+                            <td class="th_title">接车油量：</td>
+                            <td>{$recp['car_oil']}</td>
+                            <td class="th_title">车辆行驶公里数：</td>
+                            <td>{$recp['car_mileage']}</td>
+                        </tr>
+                        <tr>
+                            <td class="th_title">总价：</td>
+                            <td>{$recp['all_price']}</td>
+                            <td class="th_title">工时费：</td>
+                            <td>￥{$recp['service_list_price']}</td>
+                            <td class="th_title">材料费：</td>
+                            <td>￥{$recp['material_list_price']}</td>
+                        </tr>
+                        <tr>
+                            <td class="th_title">折扣：</td>
+                            <td>{:$recp['order_discount']/10}折</td>
+                            <td class="th_title">打折后总价：</td>
+                            <td>￥{$recp['order_allprice_discount']}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="th_title">付款方式：</td>
+                            <td>{$recp['pay_type']}</td>
+                            <td class="th_title">付款状态：</td>
+                            <td>{$recp['pay_status']}</td>
+                            <td class="th_title">付款备注：</td>
+                            <td>{$recp['pay_remarks']}</td>
+                        </tr>
+                        <tr>
+                            <td class="th_title">车辆保险公司：</td>
+                            <td>{$recp['order_insurance']}</td>
+                            <td class="th_title">提车时间：</td>
+                            <td>{$recp['order_deadline']}</td>
+                            <td class="th_title">是否需要发票：</td>
+                            <td>{$recp['order_debit']}</td>
+                        </tr>
+                        <tr>
+                            <td class="th_title">暂存身份证：</td>
+                            <td>{$recp['order_identity_customer']}</td>
+                            <td class="th_title">暂存行车证：</td>
+                            <td>{$recp['order_identity_car']}</td>
+                            <td class="th_title">其他备注：</td>
+                            <td>{$recp['order_remarks_customer']}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="layui-tab-item">
+                    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                        <legend>外观检查情况</legend>
+                    </fieldset>
+                    <table class="layui-table">
+                        <colgroup>
+                            <col width="150">
+                            <col width="150">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                        </colgroup>
+                        <tbody>
+                        <volist name="outside_check_order" id="item">
+                            <tr>
+                                <td class="th_title">检查点：</td>
+                                <td>{$item['check_point']['chk_name']}</td>
+                                <td class="th_title">照片：</td>
+                                <td>
+                                    <volist name="$item['chkorder_img']" id="img">
+                                        <a href="{$img}" target="_blank"><img src="{$img}"/></a>
+                                    </volist>
+                                </td>
+                                <td class="th_title">备注：</td>
+                                <td>{$item['chkorder_remarks']}</td>
+                            </tr>
+                        </volist>
+                        </tbody>
+                    </table>
+                    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                        <legend>内饰检查情况</legend>
+                    </fieldset>
+                    <table class="layui-table">
+                        <colgroup>
+                            <col width="150">
+                            <col width="150">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                        </colgroup>
+                        <tbody>
+                        <volist name="inside_check_order" id="item">
+                            <tr>
+                                <td class="th_title">检查点：</td>
+                                <td>{$item['check_point']['chk_name']}</td>
+                                <td class="th_title">照片：</td>
+                                <td>
+                                    <volist name="$item['chkorder_img']" id="img">
+                                        <a href="{$img}" target="_blank"><img src="{$img}"/></a>
+                                    </volist>
+                                </td>
+                                <td class="th_title">备注：</td>
+                                <td>
+                                    {$item['chkorder_remarks']}
+                                </td>
+                            </tr>
+                        </volist>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="layui-tab-item">
+                    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                        <legend>工时报价</legend>
+                    </fieldset>
+                    <table class="layui-table">
+                        <colgroup>
+                            <col width="150">
+                            <col width="150">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                        </colgroup>
+                        <tbody>
+                        <volist name="order_job_service" id="item">
+                            <tr>
+                                <td class="th_title">服务内容：</td>
+                                <td>{$item['service_name']}</td>
+                                <td class="th_title">总价：</td>
+                                <td>
+                                    ￥{$item['server_totalprice']}
+                                </td>
+                                <td class="th_title">备注：</td>
+                                <td>{$item['service_remarks']}</td>
+                            </tr>
+                        </volist>
+                        </tbody>
+                    </table>
+                    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                        <legend>材料报价</legend>
+                    </fieldset>
+                    <table class="layui-table">
+                        <colgroup>
+                            <col width="150">
+                            <col width="150">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                        </colgroup>
+                        <tbody>
+                        <volist name="order_job_material" id="item">
+                            <tr>
+                                <td class="th_title">材料：</td>
+                                <td>{$item['service_name']}</td>
+                                <td class="th_title">数量/单价：</td>
+                                <td>
+                                    x&nbsp;{$item['server_count']}&nbsp;/&nbsp;{$item['service_price']}
+                                </td>
+                                <td class="th_title">总价：</td>
+                                <td>
+                                    {$item['server_totalprice']}
+                                </td>
+                                <td class="th_title">备注：</td>
+                                <td>
+                                    {$item['chkorder_remarks']}
+                                </td>
+                            </tr>
+                        </volist>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="layui-tab-item">
+                    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                        <legend>工时报价</legend>
+                    </fieldset>
+                    <table class="layui-table">
+                        <colgroup>
+                            <col width="150">
+                            <col width="150">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                        </colgroup>
+                        <tbody>
+                        <volist name="job_service" id="item">
+                            <tr>
+                                <td>服务内容：</td>
+                                <td>{$item['service_name']}</td>
+                                <td>总价：</td>
+                                <td>
+                                    ￥{$item['server_totalprice']}
+                                </td>
+                                <td>备注：</td>
+                                <td>{$item['service_remarks']}</td>
+                            </tr>
+                        </volist>
+                        </tbody>
+                    </table>
+                    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                        <legend>材料报价</legend>
+                    </fieldset>
+                    <table class="layui-table">
+                        <colgroup>
+                            <col width="150">
+                            <col width="150">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                            <col width="200">
+                        </colgroup>
+                        <tbody>
+                        <volist name="job_material" id="item">
+                            <tr>
+                                <td>材料：</td>
+                                <td>{$item['service_name']}</td>
+                                <td>数量/单价：</td>
+                                <td>
+                                    x&nbsp;{$item['server_count']}&nbsp;/&nbsp;{$item['server_totalprice']}
+                                </td>
+                                <td>总价：</td>
+                                <td>
+
+                                </td>
+                                <td>备注：</td>
+                                <td>
+                                    {$item['chkorder_remarks']}
+                                </td>
+                            </tr>
+                        </volist>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</block>
+<block name="footer_js">
+    <script>
+        layui.use([ 'form', 'element'], function(){
+
+
+        });
+    </script>
+</block>

@@ -1,0 +1,89 @@
+<extend name="public/element_base" />
+<block name="main_body">
+    <form class="layui-form" action="" >
+        <input type="hidden" name="shopmenu_id" value="{$info['shopmenu_id']|default=''}"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属</label>
+            <div class="layui-input-block">
+                <select name="p_id" lay-verify="required" lay-search>
+                    <option value="0">作为顶级菜单</option>
+                    <volist name="menus" id="menu">
+                        <option value="{$menu['shopmenu_id']}" <if condition="$menu['shopmenu_id'] eq $info['p_id']">selected</if>>{$menu['m_title']}</option>
+                    </volist>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="m_title" value="{$info['m_title']|default=''}" required  lay-verify="required" placeholder="请输入菜单名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单图标</label>
+            <div class="layui-input-block">
+                <input type="text" name="m_icon" value="{$info['m_icon']|default=''}" placeholder="请输入CSS图标名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">连接地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="m_url" value="{$info['m_url']|default=''}" required  lay-verify="required" placeholder="请输入连接地址" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-block">
+                <input type="number" name="m_order" value="{$info['m_order']|default=0}" placeholder="请输入排序" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单类型</label>
+            <div class="layui-input-block">
+                <select name="m_type" lay-verify="required">
+                    <option value="1" selected>默认</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">菜单说明</label>
+            <div class="layui-input-block">
+                <textarea name="m_remarks" placeholder="请输入菜单说明" class="layui-textarea">{$info['m_remarks']|default=''}</textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否启用</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="is_status" lay-skin="switch" lay-text="是|否" <if condition="1 eq $info['is_status']">checked</if>>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="form_submit">保存</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</block>
+<block name="footer_js">
+    <script>
+        layui.use(['form'], function(){
+            var form = layui.form;
+            form.on('submit(form_submit)', function(data){
+                var load_index = layer.load(0, {shade: 0.5});
+                $.post('index.php?s={:request()->module().'/'.request()->controller().'/'.request()->action()}', data.field, function(data){
+                    var obj = eval('(' + data + ')');
+                    if(obj.status != 0){
+                        layer.msg(obj.msg, {icon: 5});
+                    }else{
+                        layer.msg('操作成功！', {icon: 1, end:function(){window.location.href = window.location.href;}});
+
+                    }
+                    layer.close(load_index);
+                });
+                return false;
+            });
+        });
+
+    </script>
+</block>

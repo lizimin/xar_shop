@@ -1,0 +1,344 @@
+<extend name="public/element_base" />
+<block name="main_body">
+    <div class="table-opr-tool-bar">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">搜索内容</label>
+                    <div class="layui-input-inline" style="width: auto;">
+                        <input type="text" id="kw" placeholder="请输入搜索内容" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">付款方式</label>
+                    <div class="layui-input-inline">
+                        <select id="pay_type" style="width: 80px;">
+                            <option value="">全部</option>
+                            <option value="0">现金</option>
+                            <option value="1">微信</option>
+                            <option value="2">支付宝</option>
+                        </select>
+                    </div>
+                    <label class="layui-form-label">付款状态</label>
+                    <div class="layui-input-inline">
+                        <select id="pay_status" style="width: 80px;">
+                            <option value="">全部</option>
+                            <option value="0">未付款</option>
+                            <option value="1">已付款</option>
+                        </select>
+                    </div>
+                    <label class="layui-form-label">接车单状态</label>
+                    <div class="layui-input-inline">
+                        <select id="order_status" style="width: 80px;">
+                            <option value="">全部</option>
+                            <option value="-1">取消</option>
+                            <option value="1">已接车</option>
+                            <option value="10">接待接车确认</option>
+                            <option value="20">客户确认</option>
+                            <option value="30">未派单</option>
+                            <option value="31">已派单</option>
+                            <option value="32">工单完成待确认</option>
+                            <option value="40">接待已确认工单完成</option>
+                            <option value="50">已提车</option>
+                            <option value="100">已完成</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">下单时间</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="start_time" value="{$start_time|default=''}" readonly>
+                    </div>
+                    <div class="layui-form-mid">至</div>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="end_time" value="{$end_time|default=''}" readonly>
+                    </div>
+                    <label class="layui-form-label">提车时间</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="deadline_start_time" value="{$deadline_start_time|default=''}" readonly>
+                    </div>
+                    <div class="layui-form-mid">至</div>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="deadline_end_time" value="{$deadline_end_time|default=''}" readonly>
+                    </div>
+                    <div class="layui-input-inline" style="width: auto;">
+                        <button class="layui-btn" data-type="search" type="button">搜索</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <table id="main_table" lay-filter="main_table"></table>
+</block>
+<block name="footer_js">
+    <script type="text/html" id="OrdersnTpl">
+        <a onclick="openDetail({{d.carorder_id}})">{{d.order_sn}}</a>
+    </script>
+    <script type="text/html" id="opr_toolbar">
+        <a class="layui-btn layui-btn-xs" lay-event="showDetail">查看</a>
+        <!--<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>-->
+        <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
+    </script>
+    <script>
+        layui.use(['table', 'form'], function() {
+            var table = layui.table;
+            var laydate = layui.laydate;
+            //初始化时间
+            laydate.render({
+                elem: '#start_time',
+                done: function(value, date){
+                    var new_value = value + ' 00:00:00';
+                    var start_time = Date.parse(new Date(new_value));
+                    var end_time = Date.parse(new Date($('#end_time').val() + ' 00:00:00'));
+                    if(start_time > end_time){
+                        layer.alert('开始时间不能大于结束时间！');
+                        $('#start_time').val($('#end_time').val());
+                    }
+                }
+            });
+            laydate.render({
+                elem: '#end_time',
+                done: function(value, date){
+                    var new_value = value + ' 00:00:00';
+                    var start_time = Date.parse(new Date($('#start_time').val() + ' 00:00:00'));
+                    var end_time = Date.parse(new Date(new_value));
+                    if(start_time > end_time){
+                        layer.alert('结束时间不能小于开始时间！');
+                        $('#end_time').val($('#start_time').val());
+                    }
+                }
+            });
+            //初始化时间
+            laydate.render({
+                elem: '#deadline_start_time',
+                done: function(value, date){
+                    var new_value = value + ' 00:00:00';
+                    var start_time = Date.parse(new Date(new_value));
+                    var end_time = Date.parse(new Date($('#deadline_end_time').val() + ' 00:00:00'));
+                    if(start_time > end_time){
+                        layer.alert('开始时间不能大于结束时间！');
+                        $('#deadline_start_time').val($('#deadline_end_time').val());
+                    }
+                }
+            });
+            laydate.render({
+                elem: '#deadline_end_time',
+                done: function(value, date){
+                    var new_value = value + ' 00:00:00';
+                    var start_time = Date.parse(new Date($('#deadline_start_time').val() + ' 00:00:00'));
+                    var end_time = Date.parse(new Date(new_value));
+                    if(start_time > end_time){
+                        layer.alert('结束时间不能小于开始时间！');
+                        $('#deadline_end_time').val($('#deadline_start_time').val());
+                    }
+                }
+            });
+            //第一个实例
+            var main_table = table.render({
+                elem: '#main_table',
+                height: 'full-100',
+                url: 'index.php?s={:request()->module()."/".request()->controller()."/".request()->action()}',
+                method: 'post',
+                where: get_post_data(),
+                page: true,
+                limit: 200,
+                limits: [50, 100, 150],
+                cols: [
+                    [{
+                        field: 'index',
+                        title: '序号',
+                        align: 'center',
+                        type: 'numbers'
+                    }, {
+                        field: 'order_sn',
+                        title: '接车单号（点击查看）',
+                        width: 150,
+                        align: 'center',
+                        templet: '#OrdersnTpl'
+                    }, {
+                        field: 'job_sn',
+                        title: '派工单号',
+                        width: 150,
+                        align: 'center'
+                    }, {
+                        field: 'car_plateno',
+                        title: '车牌',
+                        width: 150,
+                        align: 'center'
+                    }, {
+                        field: 'carorder_remarks',
+                        title: '备注',
+                        width: 150,
+                        align: 'center'
+                    }, {
+                        field: 'customer_name',
+                        title: '客户姓名',
+                        width: 150,
+                        align: 'center'
+                    }, {
+                        field: 'customer_tel',
+                        title: '客户电话',
+                        width: 150,
+                        align: 'center'
+                    }, {
+                        field: 'all_price',
+                        title: '总价',
+                        width: 150,
+                        align: 'center'
+                    }, {
+                        field: 'material_list_price',
+                        title: '材料费',
+                        width: 150,
+                        align: 'center'
+                    }, {
+                        field: 'service_list_price',
+                        title: '服务费',
+                        width: 150,
+                        align: 'center'
+                    },{
+                        field: 'order_discount',
+                        title: '折扣',
+                        width: 150,
+                        align: 'center'
+                    },{
+                        field: 'order_allprice_discount',
+                        title: '折扣价',
+                        width: 150,
+                        align: 'center'
+                    },{
+                        field: 'pay_type',
+                        title: '付款方式',
+                        width: 150,
+                        align: 'center'
+                    },{
+                        field: 'pay_status',
+                        title: '付款状态',
+                        width: 150,
+                        align: 'center'
+                    },{
+                        field: 'order_status',
+                        title: '接车单状态',
+                        width: 150,
+                        align: 'center'
+                    },{
+                        field: 'shop_user_id',
+                        title: '接待员',
+                        width: 150,
+                        align: 'center'
+                    },{
+                        field: 'create_time',
+                        title: '接车时间',
+                        width: 150,
+                        align: 'center'
+                    },{
+                        field: 'order_insurance',
+                        title: '保险公司名称',
+                        width: 150,
+                        align: 'center'
+                    },{
+                        field: 'order_deadline',
+                        title: '提车时间',
+                        width: 150,
+                        align: 'center'
+                    },{
+                        field: 'order_debit',
+                        title: '是否需要发票',
+                        width: 150,
+                        align: 'center'
+                    },{
+                        field: 'order_identity_customer',
+                        title: '暂存身份证',
+                        width: 150,
+                        align: 'center'
+                    },{
+                        field: 'order_identity_car',
+                        title: '暂存行车证',
+                        width: 150,
+                        align: 'center'
+                    },{
+                        field: 'opr_toolbar',
+                        title: '操作',
+                        width: 150,
+                        toolbar: '#opr_toolbar',
+                        align: 'center'
+                    }
+                    ]
+                ]
+            });
+            //监听工具条
+            table.on('tool(main_table)', function(obj) {
+                var data = obj.data;
+                if (obj.event === 'del') {
+                    layer.confirm('真的删除行么', function(index) {
+                        layer.close(index);
+                        $.getJSON('index.php?s={:request()->module().'/'.request()->controller()."/delete"}&id=' + data.carorder_id, function(data) {
+                            data = eval('(' + data + ')');
+                            if (data.status != 0) {
+                                layer.msg(data.msg, {
+                                    icon: 5
+                                });
+                            } else {
+                                layer.msg('操作成功！', {
+                                    icon: 1
+                                });
+                            }
+                        });
+                    });
+                } else if (obj.event === 'edit') {
+                    var index = layer.open({
+                        type: 2,
+                        scrollbar: true,
+                        area: ['50%', '60%'],
+                        content: 'index.php?s={:request()->module().'/'.request()->controller()."/edit"}&id=' + data.carorder_id
+                    });
+                    //                    layer.iframeAuto(index);
+                }else if (obj.event === 'showDetail') {
+                    openDetail(data.carorder_id);
+                }
+            });
+            //监听按钮组
+
+            $('.table-opr-tool-bar .layui-btn').on('click', function() {
+                var type = $(this).data('type');
+                if (type == 'add') {
+                    layer.open({
+                        type: 2,
+                        scrollbar: true,
+                        area: ['50%', '60%'],
+                        content: 'index.php?s={:request()->module().'/'.request()->controller()."/add"}'
+                    });
+                }
+            });
+
+            $('.table-opr-tool-bar .layui-btn').on('click', function(){
+                var type = $(this).data('type');
+                if(type == 'search'){
+                    main_table.reload({
+                        where: get_post_data()
+                    });
+                }
+            });
+        });
+        function openDetail(carorder_id){
+            var index = layer.open({
+                type: 2,
+                maxmin: true,
+                scrollbar: true,
+                area: ['50%', '60%'],
+                content: 'index.php?s={:request()->module().'/'.request()->controller()."/show_detail"}&id=' + carorder_id
+            });
+        }
+
+        function get_post_data(){
+            var kw = $('#kw').val();
+            var pay_type = $('#pay_type').val();
+            var pay_status = $('#pay_status').val();
+            var order_status = $('#order_status').val();
+            var start_time = $('#start_time').val();
+            var end_time = $('#end_time').val();
+            var deadline_start_time = $('#deadline_start_time').val();
+            var deadline_end_time = $('#deadline_end_time').val();
+            var post_data = {kw: kw, pay_type: pay_type, pay_status: pay_status, order_status: order_status, start_time: start_time, end_time: end_time
+            ,deadline_start_time: deadline_start_time, deadline_end_time:deadline_end_time};
+            return post_data;
+        }
+    </script>
+</block>

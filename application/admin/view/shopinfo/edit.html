@@ -1,0 +1,56 @@
+<extend name="public/element_base" />
+<block name="main_body">
+    <form class="layui-form" action="" >
+        <div class="layui-form-item">
+            <label class="layui-form-label">店名</label>
+            <div class="layui-input-block">
+                <input type="text" name="shop_name" value="{$info['shop_name']|default=''}" required  lay-verify="required" placeholder="请输入店名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">座机</label>
+            <div class="layui-input-block">
+                <input type="text" name="shop_tel" lay-verify="required|phone" value="{$info['shop_tel']|default=''}" placeholder="请输入座机" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">负责人</label>
+            <div class="layui-input-block">
+                <select name="shop_user_id" lay-verify="required" lay-search>
+                    <option>无</option>
+                    <volist name="users" id="user">
+                        <option value="{$user['shop_user_id']}" <if condition="$user['shop_user_id'] eq $info['shop_user_id']">selected</if>>{$user['urealname']}</option>
+                    </volist>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="form_submit">保存</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</block>
+<block name="footer_js">
+    <script>
+        layui.use(['form'], function(){
+            var form = layui.form;
+            form.on('submit(form_submit)', function(data){
+                var load_index = layer.load(0, {shade: 0.5});
+                $.post('index.php?s={:request()->module()."/".request()->controller()."/".request()->action()}', data.field, function(data){
+                    var obj = eval('(' + data + ')');
+                    if(obj.status != 0){
+                        layer.msg(obj.msg, {icon: 5});
+                    }else{
+                        layer.msg('操作成功！', {icon: 1, end:function(){window.location.href = window.location.href;}});
+
+                    }
+                    layer.close(load_index);
+                });
+                return false;
+            });
+        });
+
+    </script>
+</block>

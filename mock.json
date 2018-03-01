@@ -1,0 +1,170 @@
+
+common
+  // 都带授权码  字段名为token
+  // 都带shop_id  
+  // 上传车牌
+  Upload/upload/:
+    data:[{
+      path:'',
+      url:'',
+      pathmd5
+    }]
+  ShopUser/userInfo:
+    {
+      openid:''
+    }
+   data:{
+    user:{
+      token:'id'//暂时明文 为用户id
+    },
+    shop:{
+      shop_name,
+      shop_tel,
+      shop_id
+    }
+   }
+page1
+  //  识别车牌
+  Plate/ocrPlate
+  {
+    pathmd5: ‘从上传图片接口获得'
+  }
+  data:{
+    car_plate:{
+      car_plate_prefix1:'',
+      car_plate_prefix2:'',
+      car_plate_no:'',
+    }
+  }
+page5
+  // 获取车辆品牌
+  brand/getBrand
+    data:{
+
+    }
+page6
+  Brand/getBrandCar
+    data{
+
+    }
+page7
+  // 获取检查点列表  获取功能列表
+  CheckPoint/getCheckPoint/
+    {
+      check_type:Int,  //0是功能   1是外观
+      shop_id:Int  //店铺ID
+    }
+    data:{
+      chk_id:Int,
+      chk_name:String,
+    }
+  // 保存车辆检查信息
+  ShopOrderRecp/addOrderRecp
+  {
+    car_plateno:String,
+    car_mileage:String,
+    car_oil:Int,
+    car_brand:Int,
+    car_mode:Int,
+    car_outside_remarks:String,
+    car_inside_remarks:String,
+    car_outside_check:[
+      {
+          chk_id:Int,
+          chkorder_point:String,//搞个分割符   把点选的问题功能点 字符串拼起来
+          chkorder_img:String,
+          chkorder_remarks:String,//暂时为空
+      }
+    ],
+    car_inside_check:[
+      {
+          chk_id:Int,
+          chkorder_point:String,//搞个分割符   把点选的问题功能点 字符串拼起来
+          chkorder_img:String,
+          chkorder_remarks:String,//暂时为空
+      }
+    ]
+  }
+  data:{
+      order_sn:String,  //接工单ID,
+      job_sn:String,  //派工单ID,
+      car_id:Int,
+      carorder_id:Int,
+      customer_id:Int,
+      customer_name:String,
+      customer_tel:String,
+  }
+  // 获取服务接口
+  Service/getshopService
+  {
+    
+  }
+  data:{
+
+  }
+  page13
+  // 提交选择服务项
+  ShopOrderJob/addOrderJob
+  {
+    service_list:[{
+      job_sn:String,
+      order_sn:String,
+      job_remarks:String,
+      car_id:Int,//上一步中返回的
+      card_plateno:String,
+      service_id:Int,
+      service_name:String,
+      service_price:String,
+      customer_id:Int,
+    }]
+  }
+  data{
+    job_sn:String,   //工单id  用于获取确认二维码
+  }
+
+  // 提交服务项成功后
+  ShopOrderRecp/updateOrderRecp
+  {
+    carorder_id:int,//ShopOrderRecp/addOrderRecp中已获取
+    order_sn:String,//ShopOrderRecp/addOrderRecp中已获取
+    order_insurance:String,  //保险公司名字
+    order_deadline:Int,  //时间戳
+    order_debit:Int,  //发票状态   0   1
+    order_identity_customer:String,  //身份证   0   1
+    order_identity_car:String,  //身份证   0   1
+    order_remarks_customer:String,  //备注  0   1
+  }
+   // 获取订单确认二维码
+   ShopOrderRecp/getQRcodeByJobsn
+   {
+     job_sn:String,  //提交服务项已返回
+   }
+   data:{
+     qrcode_link:String,
+     qrcode_overtime:Int, //秒数
+   }
+
+   
+   
+page16
+  ShopOrderRecp/getOrderRecpList
+  {
+    type:Int,//接车单状态类型
+    page:Int,//接车单状态类型
+    page_size:Int,//接车单状态类型
+  }
+  data:[{
+    carorder_id:Int,  //接待订单id
+    order_sn:Int,   //key
+    car_plateno:String,   //车牌号
+    job_sn:Int,   //key
+    brand_name:String,   //key
+    service_str:String,   //服务项列表拼接字符串
+    order_createtime:Int,   //服务项列表拼接字符串 时间戳
+    order_deadline:Int,   //预计提车时间  时间戳
+    pay_price:String,   //接车单的服务价格  
+    pay_status:Int,   //接车单的服务状态  
+    pay_remarks:String,   //接车单的服务备注  
+    order_status:Int,   //订单状态
+    customer_id: //- 客户Id  
+  }]

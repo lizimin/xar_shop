@@ -1,0 +1,129 @@
+<extend name="public/element_base" />
+<block name="main_body">
+    <div class="layui-row">
+        <div class="layui-col-xs4">
+            <div class="cat-table-opr-tool-bar">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <div class="layui-input-inline" style="width: auto;">
+                                <input type="text" id="cat_kw" placeholder="请输入搜索内容" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline" style="width: auto;">
+                                <button class="layui-btn" data-type="search" type="button">搜索</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <table id="cat_table" lay-filter="cat_table"></table>
+        </div>
+        <div class="layui-col-xs8">
+            <div class="goods-table-opr-tool-bar">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <div class="layui-input-inline" style="width: auto;">
+                                <input type="text" id="goods_kw" placeholder="请输入搜索内容" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-input-inline" style="width: auto;">
+                                <button class="layui-btn" data-type="search" type="button">搜索</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <table id="goods_table" lay-filter="goods_table"></table>
+        </div>
+    </div>
+
+
+
+
+
+
+</block>
+<block name="footer_js">
+    <script type="text/html" id="opr_toolbar">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <script>
+        var cat = 0;
+        layui.use(['table', 'form', 'laydate'], function(){
+            var laydate = layui.laydate;
+            var table = layui.table;
+
+            var cat_table = table.render({
+                elem: '#cat_table',
+                height: 'full-60',
+                url: 'index.php?s={:request()->module().'/'.request()->controller()."/get_cats"}',
+                method: 'post',
+                where: get_cat_post_data(),
+                limit:200,
+                limits:[50,100,150],
+                cols: [[ //表头
+                    {field: 'cat_name', title: '分类', align:'left', event: 'set_cat'}
+                ]]
+            });
+
+            var goods_table = table.render({
+                elem: '#goods_table',
+                height: 'full-60',
+                url: 'index.php?s={:request()->module()."/".request()->controller()."/".request()->action()}',
+                method: 'post',
+                where: get_cat_post_data(),
+                limit:200,
+                limits:[50,100,150],
+                cols: [[ //表头
+                    {field: 'goods_name', title: '商品名称'},
+                    {field: 'goods_img', title: '图片'},
+                    {field: 'goods_dep', title: '描述'},
+                    {field: 'goods_cont', title: '详情'},
+                ]]
+            });
+
+            table.on('tool(cat_table)', function(obj){
+                var data = obj.data;
+                if(obj.event === 'set_cat'){
+                    cat = data.cat_id;
+                    var kw = $('#goods_kw').val();
+                    var post_data = {kw: kw, cat_id: cat};
+                    goods_table.reload({
+                        where: post_data
+                    });
+                }
+            });
+
+            $('.cat-table-opr-tool-bar .layui-btn').on('click', function(){
+                var type = $(this).data('type');
+                if(type == 'search'){
+                    cat_table.reload({
+                        where: get_cat_post_data()
+                    });
+                }
+            });
+
+            $('.goods-table-opr-tool-bar .layui-btn').on('click', function(){
+                var type = $(this).data('type');
+                if(type == 'search'){
+                    goods_table.reload({
+                        where: get_goods_post_data()
+                    });
+                }
+            });
+        });
+
+        function get_cat_post_data(){
+            var kw = $('#cat_kw').val();
+            var post_data = {kw: kw};
+            return post_data;
+        }
+
+        function get_goods_post_data(){
+            var kw = $('#goods_kw').val();
+            var post_data = {kw: kw, cat_id: cat};
+            return post_data;
+        }
+    </script>
+</block>

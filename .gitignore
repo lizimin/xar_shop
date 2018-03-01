@@ -1,0 +1,7 @@
+Runtime
+/.idea
+/public/uploads
+/key
+/application/config.php
+
+.DS_Store
